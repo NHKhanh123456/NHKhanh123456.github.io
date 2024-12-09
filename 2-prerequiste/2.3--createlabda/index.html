@@ -12,21 +12,21 @@
     <title>Create Lambda :: AWS System Manager</title>
 
     
-    <link href="../../css/nucleus.css?1733715134" rel="stylesheet">
-    <link href="../../css/fontawesome-all.min.css?1733715134" rel="stylesheet">
-    <link href="../../css/hybrid.css?1733715134" rel="stylesheet">
-    <link href="../../css/featherlight.min.css?1733715134" rel="stylesheet">
-    <link href="../../css/perfect-scrollbar.min.css?1733715134" rel="stylesheet">
-    <link href="../../css/auto-complete.css?1733715134" rel="stylesheet">
-    <link href="../../css/atom-one-dark-reasonable.css?1733715134" rel="stylesheet">
-    <link href="../../css/theme.css?1733715134" rel="stylesheet">
-    <link href="../../css/hugo-theme.css?1733715134" rel="stylesheet">
+    <link href="../../css/nucleus.css?1733716657" rel="stylesheet">
+    <link href="../../css/fontawesome-all.min.css?1733716657" rel="stylesheet">
+    <link href="../../css/hybrid.css?1733716657" rel="stylesheet">
+    <link href="../../css/featherlight.min.css?1733716657" rel="stylesheet">
+    <link href="../../css/perfect-scrollbar.min.css?1733716657" rel="stylesheet">
+    <link href="../../css/auto-complete.css?1733716657" rel="stylesheet">
+    <link href="../../css/atom-one-dark-reasonable.css?1733716657" rel="stylesheet">
+    <link href="../../css/theme.css?1733716657" rel="stylesheet">
+    <link href="../../css/hugo-theme.css?1733716657" rel="stylesheet">
     
-    <link href="../../css/theme-workshop.css?1733715134" rel="stylesheet">
+    <link href="../../css/theme-workshop.css?1733716657" rel="stylesheet">
     
     
 
-    <script src="../../js/jquery-3.3.1.min.js?1733715134"></script>
+    <script src="../../js/jquery-3.3.1.min.js?1733716657"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -57,14 +57,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="../../js/lunr.min.js?1733715134"></script>
-<script type="text/javascript" src="../../js/auto-complete.js?1733715134"></script>
+<script type="text/javascript" src="../../js/lunr.min.js?1733716657"></script>
+<script type="text/javascript" src="../../js/auto-complete.js?1733716657"></script>
 <script type="text/javascript">
     
         var baseurl = "\/";
     
 </script>
-<script type="text/javascript" src="../../js/search.js?1733715134"></script>
+<script type="text/javascript" src="../../js/search.js?1733716657"></script>
 
     
   </div>
@@ -597,10 +597,85 @@
 <ul>
 <li>Click <strong>Code</strong> to start coding the Lambda function.</li>
 </ul>
-<p><img alt="Lambda" src="../../images/2.prerequisite/019.png">
-<img alt="Lambda" src="../../images/2.prerequisite/19.jpg">
-<img alt="Lambda" src="../../images/2.prerequisite/020.jpg">
-<img alt="Lambda" src="../../images/2.prerequisite/20.png"></p>
+<p><img alt="Lambda" src="../../images/2.prerequisite/019.png"></p>
+<ul>
+<li>Click <strong>Code</strong>.</li>
+<li>Import this code:</li>
+</ul>
+<pre tabindex="0"><code>    import boto3
+    import json
+
+    bedrock = boto3.client(
+        service_name=&#39;bedrock-runtime&#39;,
+        region_name=&#39;us-east-1&#39;
+    )
+
+    modelId = &#39;cohere.command-text-v14&#39;
+
+    def lambda_handler(event, context):
+        print(&#39;Event: &#39;, json.dumps(event))
+
+        try:
+            # Lấy prompt từ body của request
+            requestBody = json.loads(event[&#39;body&#39;])
+            prompt = requestBody.get(&#39;prompt&#39;, &#39;&#39;)
+
+            # Kiểm tra prompt có hợp lệ không
+            if not prompt:
+                raise Exception(&#34;Invalid prompt. Please provide a valid input.&#34;)
+
+            # Payload gửi tới Bedrock
+            body = {
+                &#39;prompt&#39;: prompt,
+                &#39;max_tokens&#39;: 200,
+                &#39;temperature&#39;: 1.0,
+                &#39;return_likelihoods&#39;: &#39;NONE&#39;
+            }
+
+            # Ghi log payload gửi đi
+            print(&#34;Payload sent to Bedrock:&#34;, json.dumps(body))
+
+            # Gửi request tới Bedrock
+            bedrockResponse = bedrock.invoke_model(
+                modelId=modelId,
+                body=json.dumps(body),
+                accept=&#39;application/json&#39;,
+                contentType=&#39;application/json&#39;
+            )
+
+            # Đọc và xử lý phản hồi từ Bedrock
+            responseBody = json.loads(bedrockResponse[&#39;body&#39;].read())
+            print(&#34;Full Bedrock Response:&#34;, json.dumps(responseBody))
+
+            # Kiểm tra và trích xuất dữ liệu từ phản hồi
+            if &#39;generations&#39; in responseBody and len(responseBody[&#39;generations&#39;]) &gt; 0:
+                generatedText = responseBody[&#39;generations&#39;][0].get(&#39;text&#39;, &#39;&#39;)
+            else:
+                generatedText = &#34;No valid response from the model.&#34;
+
+            # Tạo phản hồi API
+            apiResponse = {
+                &#39;statusCode&#39;: 200,
+                &#39;body&#39;: json.dumps({
+                    &#39;prompt&#39;: prompt,
+                    &#39;response&#39;: generatedText
+                })
+            }
+
+        except Exception as e:
+            # Xử lý lỗi và log
+            print(&#39;Error:&#39;, str(e))
+            apiResponse = {
+                &#39;statusCode&#39;: 500,
+                &#39;body&#39;: json.dumps({
+                    &#39;error&#39;: str(e)
+                })
+            }
+
+        return apiResponse
+</code></pre><p><img alt="Lambda" src="../../images/2.prerequisite/19.jpg"></p>
+<p><img alt="Lambda" src="../../images/2.prerequisite/020.jpg"></p>
+<p><img alt="Lambda" src="../../images/2.prerequisite/20.png"></p>
 <ol>
 <li>After writing the code, click <strong>Deploy</strong>.</li>
 <li>A success message <strong>Deployment successful</strong> will appear.</li>
@@ -838,19 +913,19 @@
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="../../js/clipboard.min.js?1733715134"></script>
-    <script src="../../js/perfect-scrollbar.min.js?1733715134"></script>
-    <script src="../../js/perfect-scrollbar.jquery.min.js?1733715134"></script>
-    <script src="../../js/jquery.sticky.js?1733715134"></script>
-    <script src="../../js/featherlight.min.js?1733715134"></script>
-    <script src="../../js/highlight.pack.js?1733715134"></script>
+    <script src="../../js/clipboard.min.js?1733716657"></script>
+    <script src="../../js/perfect-scrollbar.min.js?1733716657"></script>
+    <script src="../../js/perfect-scrollbar.jquery.min.js?1733716657"></script>
+    <script src="../../js/jquery.sticky.js?1733716657"></script>
+    <script src="../../js/featherlight.min.js?1733716657"></script>
+    <script src="../../js/highlight.pack.js?1733716657"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="../../js/modernizr.custom-3.6.0.js?1733715134"></script>
-    <script src="../../js/learn.js?1733715134"></script>
-    <script src="../../js/hugo-learn.js?1733715134"></script>
+    <script src="../../js/modernizr.custom-3.6.0.js?1733716657"></script>
+    <script src="../../js/learn.js?1733716657"></script>
+    <script src="../../js/hugo-learn.js?1733716657"></script>
 
-    <link href="../../mermaid/mermaid.css?1733715134" rel="stylesheet" />
-    <script src="../../mermaid/mermaid.js?1733715134"></script>
+    <link href="../../mermaid/mermaid.css?1733716657" rel="stylesheet" />
+    <script src="../../mermaid/mermaid.js?1733716657"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>
