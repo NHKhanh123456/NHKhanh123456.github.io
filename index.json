@@ -1,0 +1,92 @@
+[
+{
+	"uri": "/",
+	"title": "AWS Bedrock",
+	"tags": [],
+	"description": "",
+	"content": "Working with AWS Bedrock Overview This lab illustrates the architecture integrating AWS services, where Postman serves as the tool to send HTTP requests to the API Gateway. The API Gateway receives requests and forwards them to AWS Lambda for processing. Lambda interacts with the AWS Bedrock service to perform AI-related tasks and returns the results. IAM Role is used to grant Lambda the necessary permissions. This architecture can be scaled to build serverless applications integrated with AI.\nContent Introduction Preparation Connect to EC2 instance Manage session logs Port Forwarding Clean up resources "
+},
+{
+	"uri": "/1-introduce/",
+	"title": "Introduction",
+	"tags": [],
+	"description": "",
+	"content": "AWS Bedrock is a service designed to simplify the integration and deployment of large language models (LLMs) from leading model providers. AWS Bedrock offers a serverless approach, enabling developers to easily access and interact with AI models without the need to manage infrastructure or compute resources.\nKey Benefits of AWS Bedrock: No Complex Infrastructure Required: Eliminates the need to manage servers, storage, or GPU hardware for running AI models. Direct Access to Large Language Models (LLMs): Supports models from renowned providers such as Anthropic, Cohere, Stability AI, Amazon Titan, and more. High Customizability: Tailor AI models to meet specific business needs without requiring retraining from scratch. Security and Privacy: Data remains within your AWS account, ensuring privacy and security. Seamless Integration with Other AWS Services: Easily integrates with services like Amazon S3, Lambda, and SageMaker to build flexible AI applications. Pay-as-You-Go: Cost-efficient pricing model where you only pay for what you use. With these advantages, AWS Bedrock is an ideal solution for businesses seeking to harness the power of artificial intelligence without managing complex infrastructure, saving time and reducing deployment costs.\n"
+},
+{
+	"uri": "/2-prerequiste/2.1-bedrock/",
+	"title": "Prepare Bedrock",
+	"tags": [],
+	"description": "",
+	"content": "In this step, we will activate the Models in Bedrock.\nOn the left navigation panel, click Models access. Click Modify model access. Click AI21 Labs. Click Amazon. Click Cohere. Click Meta. Click Mistral AI. Click Stability AI. Click Next. Click Submit. In the next step, we will create IAM Roles.\n"
+},
+{
+	"uri": "/3-demo/3.1-request/",
+	"title": "Send a Request Using Postman",
+	"tags": [],
+	"description": "",
+	"content": " Open Postman. Select POST. Enter the URL obtained in the Deploy API step + Resource. Click Body. Select raw. Enter your query. Click Send. "
+},
+{
+	"uri": "/2-prerequiste/2.2-createiamrole/",
+	"title": "Create IAM Roles",
+	"tags": [],
+	"description": "",
+	"content": "Create IAM Role In this step, we will create an IAM Role. This IAM Role will be assigned the AmazonBedrockFullAccess policy, which allows Lambda to communicate with Bedrock.\nGo to the IAM service management console. On the left navigation panel, click Roles. Click Create role. Click AWS service and select Lambda. Click Next: Permissions. In the search box, enter AmazonBedrockFullAccess and press Enter to find the policy. Select the AmazonBedrockFullAccess policy. Click Next. Name the role chatGPTLambdaRole in the Role Name field. Click Create Role. Once created successfully, you will see a confirmation message. Next, we will create the Lambda function.\n"
+},
+{
+	"uri": "/2-prerequiste/",
+	"title": "Preparation Steps",
+	"tags": [],
+	"description": "",
+	"content": "\rYou need to prepare a valid IAM Role with appropriate policies for this project.\nTo understand how to configure and manage IAM Roles, you can refer to the following resources:\nUnderstanding IAM Roles To use AWS Bedrock effectively, we need to ensure that Lambda functions and other AWS services are granted the necessary permissions. In this preparation step, we will also create an IAM Role to enable these permissions.\nContents Prepare Bedrock Create IAM Role Create Lambda Create API Gateway "
+},
+{
+	"uri": "/2-prerequiste/2.3--createlabda/",
+	"title": "Create Lambda",
+	"tags": [],
+	"description": "",
+	"content": "Create Lambda In this step, we will configure a Lambda function that processes requests from API Gateway, invokes Bedrock, and returns the response.\nGo to the Lambda management console. On the Get started page, click Create a function. Enter chatGPTLambda as the Function name. Select Python 3.13 as the Runtime. Choose arm64 under Architecture. Select Use an existing role. Choose chatGPTLambdaRole under Existing role. Click Create function. You will see a success message confirming the creation.\nClick Configuration. Click Edit. Set Memory to 500 MB. Set Timeout to 2 minutes. Confirm the chatGPTLambdaRole is selected. Click Save. A success message will appear for the updated configuration.\nClick Code to start coding the Lambda function. After writing the code, click Deploy. A success message Deployment successful will appear. Next, we will create the API Gateway.\n"
+},
+{
+	"uri": "/3-demo/3.2-response/",
+	"title": "Receive the Response from Bedrock in Postman",
+	"tags": [],
+	"description": "",
+	"content": " After clicking Send, we receive a response as shown below. Next, we try with two different querys and also receive a response. In the next step, we will clean up the resources. "
+},
+{
+	"uri": "/3-demo/",
+	"title": "Run Postman",
+	"tags": [],
+	"description": "",
+	"content": "In this step, we will send the URL via the POST method to receive a response from Bedrock.\nContents 3.1. Send a request using Postman. 3.2. Receive the response from Bedrock in Postman.\n"
+},
+{
+	"uri": "/4-cleanup/",
+	"title": "Clean Up Resources",
+	"tags": [],
+	"description": "",
+	"content": " Delete API. Click API actions. Select Delete API. Type confirm. Click Delete. The API has been successfully deleted.\nNext step, delete Lambda Function.\nIn the left navigation pane, click Functions. Select chatGPTLambda. Click Actions. Select Delete. Type delete. Click Delete. Next step, delete IAM Roles. In the left navigation pane, click Roles. Select chatGPTLambdaRole. Click Delete. Enter chatGPTLambdaRole. Click Delete. The IAM roles has been successfully deleted. "
+},
+{
+	"uri": "/2-prerequiste/2.4-createapigateway/",
+	"title": "Create API Gateway",
+	"tags": [],
+	"description": "",
+	"content": "Create API Gateway In this step, we will create an API Gateway. The API Gateway will receive requests from Postman and forward them to Lambda.\nGo to the API Gateway management console. Under the REST API section, click Build. Enter chatgpt-api as the API name. Click Create API. A success message will appear. Click Create resource. Name the resource ask, and note that the /ask resource will be appended to the URL when deploying the API. Click CORS. Click Create resource. A success message will appear. Click Create method. Select POST. Select Lambda proxy integration. Choose us-east-1. Enter us-east-1:youraccountid:function:chatGPTLambda. Click Create method. A success message will appear. Click /. Click Deploy API. Select New stage. Name the stage KHANH. Click Deploy. A success message will appear. Copy the Invoke URL + resource and paste it into Postman. Let’s see the results in the next step!\n"
+},
+{
+	"uri": "/categories/",
+	"title": "Categories",
+	"tags": [],
+	"description": "",
+	"content": ""
+},
+{
+	"uri": "/tags/",
+	"title": "Tags",
+	"tags": [],
+	"description": "",
+	"content": ""
+}]

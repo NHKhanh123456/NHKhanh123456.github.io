@@ -1,0 +1,92 @@
+[
+{
+	"uri": "/vi/",
+	"title": "AWS Bedrock",
+	"tags": [],
+	"description": "",
+	"content": "Làm việc với AWS Bedrock Tổng quan Trong bài lab này minh họa kiến trúc tích hợp giữa các dịch vụ AWS, trong đó Postman đóng vai trò là công cụ gửi yêu cầu HTTP đến API Gateway. API Gateway nhận các yêu cầu, sau đó chuyển tiếp đến AWS Lambda để xử lý. Lambda giao tiếp với dịch vụ AWS Bedrock để thực hiện các tác vụ liên quan đến AI và trả về kết quả. IAM Role được sử dụng để cấp quyền cho Lambda. Kiến trúc này có thể mở rộng để xây dựng ứng dụng serverless tích hợp AI.\nNội dung Giới thiệu Các bước chuẩn bị Tạo kết nối đến máy chủ EC2 Quản lý session logs Port Forwarding Dọn dẹp tài nguyên "
+},
+{
+	"uri": "/vi/2-prerequiste/2.1-bedrock/",
+	"title": "Chuẩn bị Bedrock",
+	"tags": [],
+	"description": "",
+	"content": "Trong bước này, chúng ta sẽ khởi chạy các Models của Bedrock.\nỞ thanh điều hướng bên trái, click Models access. Click Modify model access. Click AI21 Labs. Click Amazone. Click Cohere. Click Meta. Click Mistral AI. Click Stability AI. Click Next. Click Submit. Ở bước tiếp theo, chúng ta sẽ tạo IAM Roles.\n"
+},
+{
+	"uri": "/vi/1-introduce/",
+	"title": "Giới thiệu",
+	"tags": [],
+	"description": "",
+	"content": "AWS Bedrock là một dịch vụ được thiết kế để đơn giản hóa việc tích hợp và triển khai các mô hình ngôn ngữ lớn (LLMs) từ các nhà cung cấp mô hình hàng đầu. AWS Bedrock cung cấp cách tiếp cận không cần máy chủ, cho phép các nhà phát triển dễ dàng truy cập và tương tác với các mô hình AI mà không cần phải quản lý cơ sở hạ tầng hoặc tài nguyên máy tính.\nLợi ích chính của AWS Bedrock: Không cần cơ sở hạ tầng phức tạp: Không cần phải quản lý máy chủ, lưu trữ hoặc phần cứng GPU để chạy các mô hình AI. Truy cập trực tiếp vào các mô hình ngôn ngữ lớn (LLMs): Hỗ trợ các mô hình từ các nhà cung cấp nổi tiếng như Anthropic, Cohere, Stability AI, Amazon Titan và nhiều hơn nữa. Khả năng tùy chỉnh cao: Tùy chỉnh các mô hình AI cho nhu cầu cụ thể của doanh nghiệp mà không cần phải đào tạo lại từ đầu. Bảo mật và quyền riêng tư: Dữ liệu không rời khỏi tài khoản AWS của bạn, đảm bảo tính riêng tư và bảo mật. Tích hợp dễ dàng với các dịch vụ AWS khác: Dễ dàng tích hợp với các dịch vụ như Amazon S3, Lambda, SageMaker để xây dựng các ứng dụng AI linh hoạt. Thanh toán theo mức sử dụng thực tế: Tiết kiệm chi phí bằng cách chỉ trả tiền cho lượng tài nguyên sử dụng. Với những lợi thế trên, AWS Bedrock là giải pháp lý tưởng cho các doanh nghiệp muốn tận dụng sức mạnh của trí tuệ nhân tạo mà không cần phải quản lý cơ sở hạ tầng phức tạp, tiết kiệm thời gian và chi phí triển khai.\n"
+},
+{
+	"uri": "/vi/2-prerequiste/",
+	"title": "Các bước chuẩn bị",
+	"tags": [],
+	"description": "",
+	"content": "\rBạn cần cấu hình chuẩn bị một IAM Role hợp lệ với các chính sách phù hợp cho dự án này.\nĐể tìm hiểu cách cấu hình và quản lý IAM Role, bạn có thể tham khảo các tài liệu sau:\nTìm hiểu về IAM Roles Để sử dụng AWS Bedrock một cách hiệu quả, chúng ta cần đảm bảo rằng Lambda function và các dịch vụ AWS khác được cấp các quyền cần thiết. Trong phần chuẩn bị này, chúng ta cũng sẽ tiến hành tạo một IAM Role để kích hoạt các quyền truy cập này.\nNội dung Chuẩn bị Bedrock Tạo IAM Role Tạo Lambda Tạo API Gateway "
+},
+{
+	"uri": "/vi/2-prerequiste/2.2-createiamrole/",
+	"title": "Tạo IAM Roles",
+	"tags": [],
+	"description": "",
+	"content": "Tạo IAM Role Trong bước này chúng ta sẽ tiến hành tạo IAM Role. Trong IAM Role này sẽ được gán policy AmazonBedrockFullAccess, đây là policy cho phép Lambda giao tiếp với Bedrock.\nTruy cập vào giao diện quản trị dịch vụ IAM Ở thanh điều hướng bên trái, click Roles. Click Create role. 4. Click AWS service và click Lambda.\nClick Next: Permissions. Trong ô Search, điền AmazonBedrockFullAccess và ấn phím Enter để tìm kiếm policy này. Click chọn policy AmazonBedrockFullAccess. Click Next. Đặt tên cho Role là chatGPTLambdaRole ở Role Name Click Create Role . Sau khi tạo thành công, chúng ta sẽ thấy được thông báo. Tiếp theo chúng ta sẽ thực hiện tạo Lambda.\n"
+},
+{
+	"uri": "/vi/3-demo/",
+	"title": "Chạy Postman",
+	"tags": [],
+	"description": "",
+	"content": "Trong bước này, chúng ta sẽ thực hiện gửi URL qua giao thức POST để nhận phản hồi từ Bedrock.\nNội dung 3.1. Gửi yêu cầu từ Postman. 3.2. Nhận phản hồi từ Bedrock về Postman.\n"
+},
+{
+	"uri": "/vi/3-demo/3.1-request/",
+	"title": "Gửi yêu cầu từ Postman",
+	"tags": [],
+	"description": "",
+	"content": " Truy cập vào Postman. Click POST. Điền URL đã lấy ở phần Deploy API + Resource. Click Body. Click raw. Nhập câu hỏi. Click Send. "
+},
+{
+	"uri": "/vi/3-demo/3.2-response/",
+	"title": "Nhận phản hồi từ Bedrock về Postman",
+	"tags": [],
+	"description": "",
+	"content": " Sau khi bấm Send. Chúng ta nhận về phản hồi như hình. Sau đó chúng ta thử với hai câu hỏi khác và cũng nhận về được phản hồi. Ở bước tiếp theo chúng ta sẽ dọn dẹp tài nguyên. "
+},
+{
+	"uri": "/vi/2-prerequiste/2.3--createlabda/",
+	"title": "Tạo Lambda",
+	"tags": [],
+	"description": "",
+	"content": "Tạo Lambda Trong bước này chúng ta sẽ tiến hành cấu hình Lambda để khi nhận yêu cầu từ API Gateway, Lambda sẽ tiến hành xử lý và gọi Bedrock thục hiện yêu cầu.\nTruy cập vào giao diện quản trị dịch vụ Lambda. Ở phần Get started, click Create a function. Đặt tên chatGPTLambda trong Function name. Click Python3.13 trong Runtime. Click arm64. Click Use an existing role. Click chatGPTLambdaRole trong Existing role. Click Create function. Hiện thông báo tạo thành công.\nClick Configuration. Click Edit. Memory = 500. Timeout = 2 min. Click chatGPTLambdaRole trong Existing role. CLick Save. Hiện thông báo update thành công. Sau đó chúng ta sẽ tiến hành code trong Lambda. Click Code. Sau khi code xong, click Deploy. Hiện thông báo Deployment successful. Tiếp theo, chúng ta sẽ tiến hành tạo API Gateway.\n"
+},
+{
+	"uri": "/vi/4-cleanup/",
+	"title": "Dọn dẹp tài nguyên",
+	"tags": [],
+	"description": "",
+	"content": " Xóa API. Click API actions. Click Delete API. Nhập confirm. Click Delete. Xóa thành công.\nTiếp theo chúng ta sẽ xóa Lambda.\nỞ thanh điều hướng bên trái, click Function. Click chatGPTLambda. Click Actions. Click Delete. Nhập delete. Click Delete. Tiếp theo chúng ta sẽ xóa IAM Role. Ở thanh điều hướng bên trái, click Roles. Click chatGPTLambdaRole. Click Delete. Nhập chatGPTLambdaRole. Click Delete. Đã xóa thành công. "
+},
+{
+	"uri": "/vi/2-prerequiste/2.4-createapigateway/",
+	"title": "Tạo API Gateway",
+	"tags": [],
+	"description": "",
+	"content": "Tạo API Gateway Trong bước này chúng ta sẽ tiến hành tạo API Gateway. API Gateway sẽ nhận các yêu cầu từ Postman và chuyển tới Lambda.\nTruy cập vào giao diện quản trị dịch vụ API Gateway. Ở mục REST API, click Build. Đặt tên chatgpt-api trong API name. Click Create API. Hiện thông báo tạo thành công. Click Create resource. Đặt tên cho Resource là ask, tên /ask của resource này chúng ta sẽ dán vào Postman chung với URL khi Deploy API. Click CORS. Click Create resource. Hiện thông báo tạo thành công. Click Create method. Click POST. Click Lambda proxy integration. Click us-east-1. Click us-east-1:youraccountid:function:chatGPTLambda. Click Create method. Hiện thông báo tạo thành công. Click /. Click Deploy API. Click New stage. Đặt tên KHANH trong stage name. Click Deploy. Hiện thông báo tạo thành công. Và chúng ta sẽ lấy Invoke URL + resource dán vào Postman. Cùng xem kết quả ở bước tiếp theo nhé.\n"
+},
+{
+	"uri": "/vi/categories/",
+	"title": "Categories",
+	"tags": [],
+	"description": "",
+	"content": ""
+},
+{
+	"uri": "/vi/tags/",
+	"title": "Tags",
+	"tags": [],
+	"description": "",
+	"content": ""
+}]
